@@ -5,7 +5,7 @@ This application was generated using JHipster 5.6.1, you can find documentation 
 
 To start your application in the dev profile, simply run:
 
-    
+    ./gradlew
 
 
 For further instructions on how to develop with JHipster, have a look at [Using JHipster in development][].
@@ -16,9 +16,11 @@ For further instructions on how to develop with JHipster, have a look at [Using 
 
 To optimize the sig application for production, run:
 
+    ./gradlew -Pprod clean bootWar
 
 To ensure everything worked, run:
 
+    java -jar build/libs/*.war
 
 
 Refer to [Using JHipster in production][] for more details.
@@ -51,18 +53,18 @@ For more information, refer to the [Code quality page][].
 
 You can use Docker to improve your JHipster development experience. A number of docker-compose configuration are available in the [src/main/docker](src/main/docker) folder to launch required third party services.
 
-For example, to start a  database in a docker container, run:
+For example, to start a postgresql database in a docker container, run:
 
-    docker-compose -f src/main/docker/.yml up -d
+    docker-compose -f src/main/docker/postgresql.yml up -d
 
 To stop it and remove the container, run:
 
-    docker-compose -f src/main/docker/.yml down
+    docker-compose -f src/main/docker/postgresql.yml down
 
 You can also fully dockerize your application and all the services that it depends on.
 To achieve this, first build a docker image of your app by running:
 
-    
+    ./gradlew bootWar -Pprod jibDockerBuild
 
 Then run:
 
