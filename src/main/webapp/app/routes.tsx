@@ -17,6 +17,7 @@ import VolumeValidation from 'app/modules/validations/volume';
 import WeightValidation from 'app/modules/validations/weight';
 import DateValidation from 'app/modules/validations/dater';
 import { AUTHORITIES } from 'app/config/constants';
+import { Sap } from 'app/modules/validations/sap';
 
 // tslint:disable:space-in-parens
 const Account = Loadable({
@@ -34,6 +35,7 @@ const Routes = () => (
   <div className="view-routes">
     <ErrorBoundaryRoute path="/login" component={Login} />
     <Switch>
+      <ErrorBoundaryRoute path="/sap" component={Sap} />
       <ErrorBoundaryRoute path="/logout" component={Logout} />
       <ErrorBoundaryRoute path="/register" component={Register} />
       <ErrorBoundaryRoute path="/activate/:key?" component={Activate} />

@@ -74,8 +74,8 @@ export class DateValidation extends React.Component<IDateValidationProps> {
             >
               <FontAwesomeIcon icon="check-square" /> <span className="d-none d-md-inline">Modificar</span>
             </Button>
-            <Button className="float-right" tag={Link} to={`/validateStock`} color="info" size="sm">
-              <FontAwesomeIcon icon="check-square" /> <span className="d-none d-md-inline">Siguiente</span>
+            <Button className="float-right" tag={Link} to={`/sap`} color="info" size="sm">
+              <FontAwesomeIcon icon="check-square" /> <span className="d-none d-md-inline">Enviar a SAP</span>
             </Button>
           </div>
         );
