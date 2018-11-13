@@ -20,7 +20,7 @@ export interface IHeaderState {
   menuOpen: boolean;
 }
 
-class Header extends React.Component<IHeaderProps, IHeaderState> {
+export default class Header extends React.Component<IHeaderProps, IHeaderState> {
   state: IHeaderState = {
     menuOpen: false
   };
