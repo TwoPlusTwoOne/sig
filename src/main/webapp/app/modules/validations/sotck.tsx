@@ -10,29 +10,33 @@ import { IRootState } from 'app/shared/reducers';
 // import { getEntities } from './purchase-order.reducer';
 import { IPurchaseOrder } from 'app/shared/model/purchase-order.model';
 import { getEntities as getProducts } from 'app/entities/product/product.reducer';
-import { getEntities as getPurchaseOrder } from 'app/entities/purchase-order/purchase-order.reducer';
+import { getEntity as getPurchaseOrder } from 'app/entities/purchase-order/purchase-order.reducer';
+import { getEntities as getProductInPurchaseOrder } from 'app/entities/product-in-purchase-order/product-in-purchase-order.reducer';
 // tslint:disable-next-line:no-unused-variable
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { IProductInPurchaseOrder } from 'app/shared/model/product-in-purchase-order.model';
 
 // export interface IPurchaseOrderProps extends RouteComponentProps<{ url: string }> {}
 
-interface StockValidationProps extends StateProps, DispatchProps, RouteComponentProps<{ purchaseOrder: string }> {}
+interface IStockValidationProps extends StateProps, DispatchProps, RouteComponentProps<{ purchaseOrder: string }> {}
 
-export class StockValidation extends React.Component<StockValidationProps> {
+export class StockValidation extends React.Component<IStockValidationProps> {
   componentDidMount() {
-    // this.props.getEntities();
-
     this.props.getProducts();
-    this.props.getPurchaseOrder();
+    this.props.getPurchaseOrder(this.props.match.params.purchaseOrder);
+    this.props.getProductInPurchaseOrder();
   }
 
   render() {
     // const { purchaseOrderList, match } = this.props;
 
-    const validateItemStock = (i: IProductInPurchaseOrder) => i.quantity < this.props.products.find(p => p.id == i.id).stock;
+    const validItemStock = (i: IProductInPurchaseOrder) => i.quantity <= this.props.products.find(p => p.id === i.product.id).stock;
 
-    const passValidation = () => this.props.purchaseOrder.products.filter(p => validateItemStock(p)).length > 0;
+    const passValidation = () => {
+      console.log(this.props);
+      const products = this.props.productInPurchaseOrder.filter(p => p.purchaseOrder.id === this.props.purchaseOrder.id);
+      return products.filter(p => validItemStock(p)).length > 0;
+    };
 
     const validationResult = () => {
       if (passValidation()) {
@@ -45,13 +49,30 @@ export class StockValidation extends React.Component<StockValidationProps> {
     const formButton = () => {
       if (passValidation()) {
         return (
-          <Button className="float-right" tag={Link} to={`/validateStock`} color="info" size="sm">
-            <FontAwesomeIcon icon="check-square" /> <span className="d-none d-md-inline">Siguiente</span>
-          </Button>
+          <div>
+            <Button
+              className="float-left"
+              tag={Link}
+              to={`/entity/purchase-order/${this.props.purchaseOrder.id}/edit`}
+              color="info"
+              size="sm"
+            >
+              <FontAwesomeIcon icon="check-square" /> <span className="d-none d-md-inline">Modificar</span>
+            </Button>
+            <Button className="float-right" tag={Link} to={`/validateStock`} color="info" size="sm">
+              <FontAwesomeIcon icon="check-square" /> <span className="d-none d-md-inline">Siguiente</span>
+            </Button>
+          </div>
         );
       } else {
         return (
-          <Button className="float-right" tag={Link} to={`/validateStock`} color="info" size="sm">
+          <Button
+            className="float-right"
+            tag={Link}
+            to={`/entity/purchase-order/${this.props.purchaseOrder.id}/edit`}
+            color="info"
+            size="sm"
+          >
             <FontAwesomeIcon icon="check-square" /> <span className="d-none d-md-inline">Modificar</span>
           </Button>
         );
@@ -84,12 +105,14 @@ export class StockValidation extends React.Component<StockValidationProps> {
 
 const mapStateToProps = (storeState: IRootState) => ({
   products: storeState.product.entities,
-  purchaseOrder: storeState.purchaseOrder.entity
+  purchaseOrder: storeState.purchaseOrder.entity,
+  productInPurchaseOrder: storeState.productInPurchaseOrder.entities
 });
 
 const mapDispatchToProps = {
   getProducts,
-  getPurchaseOrder
+  getPurchaseOrder,
+  getProductInPurchaseOrder
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;
