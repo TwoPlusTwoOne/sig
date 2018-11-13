@@ -9,30 +9,30 @@ const adminMenuItems = (
     <DropdownItem tag={Link} to="/admin/user-management">
       <FontAwesomeIcon icon="user" /> User management
     </DropdownItem>
-    <DropdownItem tag={Link} to="/admin/metrics">
+    {/*<DropdownItem tag={Link} to="/admin/metrics">
       <FontAwesomeIcon icon="tachometer-alt" /> Metrics
-    </DropdownItem>
-    <DropdownItem tag={Link} to="/admin/health">
+    </DropdownItem>*/}
+    {/*<DropdownItem tag={Link} to="/admin/health">
       <FontAwesomeIcon icon="heart" /> Health
-    </DropdownItem>
-    <DropdownItem tag={Link} to="/admin/configuration">
+    </DropdownItem>*/}
+    {/*<DropdownItem tag={Link} to="/admin/configuration">
       <FontAwesomeIcon icon="list" /> Configuration
-    </DropdownItem>
-    <DropdownItem tag={Link} to="/admin/audits">
+    </DropdownItem>*/}
+    {/*<DropdownItem tag={Link} to="/admin/audits">
       <FontAwesomeIcon icon="bell" /> Audits
-    </DropdownItem>
+    </DropdownItem>*/}
     {/* jhipster-needle-add-element-to-admin-menu - JHipster will add entities to the admin menu here */}
-    <DropdownItem tag={Link} to="/admin/logs">
+    {/*<DropdownItem tag={Link} to="/admin/logs">
       <FontAwesomeIcon icon="tasks" /> Logs
-    </DropdownItem>
+    </DropdownItem>*/}
   </>
 );
 
-const swaggerItem = (
+/*const swaggerItem = (
   <DropdownItem tag={Link} to="/admin/docs">
     <FontAwesomeIcon icon="book" /> API
   </DropdownItem>
-);
+);*/
 
 const databaseItem = (
   <DropdownItem tag="a" href="./h2-console" target="_tab">
@@ -43,7 +43,6 @@ const databaseItem = (
 export const AdminMenu = ({ showSwagger, showDatabase }) => (
   <NavDropdown icon="user-plus" name="Administration" style={{ width: '140%' }} id="admin-menu">
     {adminMenuItems}
-    {showSwagger && swaggerItem}
 
     {showDatabase && databaseItem}
   </NavDropdown>

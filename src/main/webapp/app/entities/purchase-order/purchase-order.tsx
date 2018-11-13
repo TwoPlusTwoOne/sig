@@ -21,13 +21,14 @@ export class PurchaseOrder extends React.Component<IPurchaseOrderProps> {
 
   render() {
     const { purchaseOrderList, match } = this.props;
+
     return (
       <div>
         <h2 id="purchase-order-heading">
-          Purchase Orders
+          Órdenes de compra
           <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
             <FontAwesomeIcon icon="plus" />
-            &nbsp; Create new Purchase Order
+            &nbsp; Crear una nueva órden de compra
           </Link>
         </h2>
         <div className="table-responsive">
@@ -35,8 +36,8 @@ export class PurchaseOrder extends React.Component<IPurchaseOrderProps> {
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Date</th>
-                <th>Revision Attempts</th>
+                <th>Fecha de entrega</th>
+                <th>Revisiones realizadas</th>
                 <th>Status</th>
                 <th>Client</th>
                 <th />
@@ -51,7 +52,11 @@ export class PurchaseOrder extends React.Component<IPurchaseOrderProps> {
                     </Button>
                   </td>
                   <td>
-                    <TextFormat type="date" value={purchaseOrder.date} format={APP_LOCAL_DATE_FORMAT} />
+                    {purchaseOrder.date ? (
+                      <TextFormat type="date" value={purchaseOrder.date} format={APP_LOCAL_DATE_FORMAT} />
+                    ) : (
+                      'No establecido todavía'
+                    )}
                   </td>
                   <td>{purchaseOrder.revisionAttempts}</td>
                   <td>{purchaseOrder.status}</td>
@@ -59,13 +64,13 @@ export class PurchaseOrder extends React.Component<IPurchaseOrderProps> {
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`${match.url}/${purchaseOrder.id}`} color="info" size="sm">
-                        <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+                        <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">Ver detalle</span>
                       </Button>
                       <Button tag={Link} to={`${match.url}/${purchaseOrder.id}/edit`} color="primary" size="sm">
-                        <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                        <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Modificar</span>
                       </Button>
                       <Button tag={Link} to={`${match.url}/${purchaseOrder.id}/delete`} color="danger" size="sm">
-                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Borrar</span>
                       </Button>
                     </div>
                   </td>
