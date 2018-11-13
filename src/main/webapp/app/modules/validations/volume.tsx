@@ -10,6 +10,7 @@ import { IRootState } from 'app/shared/reducers';
 // import { getEntities } from './purchase-order.reducer';
 import { IPurchaseOrder } from 'app/shared/model/purchase-order.model';
 import { getEntities as getProducts } from 'app/entities/product/product.reducer';
+import { getEntity as getTruck } from 'app/entities/truck/truck.reducer';
 import { getEntity as getPurchaseOrder } from 'app/entities/purchase-order/purchase-order.reducer';
 import { getEntities as getProductInPurchaseOrder } from 'app/entities/product-in-purchase-order/product-in-purchase-order.reducer';
 // tslint:disable-next-line:no-unused-variable
@@ -18,9 +19,9 @@ import { IProductInPurchaseOrder } from 'app/shared/model/product-in-purchase-or
 
 // export interface IPurchaseOrderProps extends RouteComponentProps<{ url: string }> {}
 
-interface IStockValidationProps extends StateProps, DispatchProps, RouteComponentProps<{ purchaseOrder: string }> {}
+interface IVolumeValidationProps extends StateProps, DispatchProps, RouteComponentProps<{ purchaseOrder: string }> {}
 
-export class StockValidation extends React.Component<IStockValidationProps> {
+export class VolumeValidation extends React.Component<IVolumeValidationProps> {
   componentDidMount() {
     this.props.getProducts();
     this.props.getPurchaseOrder(this.props.match.params.purchaseOrder);
@@ -28,13 +29,21 @@ export class StockValidation extends React.Component<IStockValidationProps> {
   }
 
   render() {
+    console.log('VolumeValidation');
     // const { purchaseOrderList, match } = this.props;
 
     const validItemStock = (i: IProductInPurchaseOrder) => i.quantity <= this.props.products.find(p => p.id === i.product.id).stock;
 
     const passValidation = () => {
-      const products = this.props.productInPurchaseOrder.filter(p => p.purchaseOrder.id === this.props.purchaseOrder.id);
-      return products.filter(p => validItemStock(p)).length > 0;
+      //   const totalWieght =
+      //     this.props.productInPurchaseOrder
+      //         .filter(p => p.purchaseOrder.id === this.props.purchaseOrder.id)
+      //         .map(x => x.product.weight * x.quantity)
+      //         .reduce((y, z) =>  y + z);
+
+      //     const truckCount = Math.trunc(totalWieght / this.props.truck.maxWeight)
+      //   return totalWieght <= this.props.truck.maxWeight
+      return true;
     };
 
     const validationResult = () => {
@@ -58,7 +67,7 @@ export class StockValidation extends React.Component<IStockValidationProps> {
             >
               <FontAwesomeIcon icon="check-square" /> <span className="d-none d-md-inline">Modificar</span>
             </Button>
-            <Button className="float-right" tag={Link} to={`/validateVolume/${this.props.purchaseOrder.id}`} color="info" size="sm">
+            <Button className="float-right" tag={Link} to={`/validateWeight/${this.props.purchaseOrder.id}`} color="info" size="sm">
               <FontAwesomeIcon icon="check-square" /> <span className="d-none d-md-inline">Siguiente</span>
             </Button>
           </div>
@@ -82,7 +91,7 @@ export class StockValidation extends React.Component<IStockValidationProps> {
       <div>
         <Row>
           <Col>
-            <h2 id="purchase-order-heading">Validación de disponibilidad</h2>
+            <h2 id="purchase-order-heading">Validación de volúmen</h2>
           </Col>
         </Row>
         <Row>
@@ -105,12 +114,14 @@ export class StockValidation extends React.Component<IStockValidationProps> {
 const mapStateToProps = (storeState: IRootState) => ({
   products: storeState.product.entities,
   purchaseOrder: storeState.purchaseOrder.entity,
+  truck: storeState.truck.entity,
   productInPurchaseOrder: storeState.productInPurchaseOrder.entities
 });
 
 const mapDispatchToProps = {
   getProducts,
   getPurchaseOrder,
+  getTruck,
   getProductInPurchaseOrder
 };
 
@@ -120,4 +131,4 @@ type DispatchProps = typeof mapDispatchToProps;
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(StockValidation);
+)(VolumeValidation);
