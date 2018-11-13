@@ -62,6 +62,11 @@ export class PurchaseOrder extends React.Component<IPurchaseOrderProps> {
                   <td>{purchaseOrder.status}</td>
                   <td>{purchaseOrder.client ? `[${purchaseOrder.client.id}] ${purchaseOrder.client.name}` : ''}</td>
                   <td className="text-right">
+                    <Button tag={Link} to={`/validateStock/${purchaseOrder.id}`} color="info" size="sm">
+                      <FontAwesomeIcon icon="check-square" /> <span className="d-none d-md-inline">Validar</span>
+                    </Button>
+                  </td>
+                  <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`${match.url}/${purchaseOrder.id}`} color="info" size="sm">
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">Ver detalle</span>
