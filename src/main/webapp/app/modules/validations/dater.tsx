@@ -16,30 +16,37 @@ import { getEntities as getProductInPurchaseOrder } from 'app/entities/product-i
 // tslint:disable-next-line:no-unused-variable
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { IProductInPurchaseOrder } from 'app/shared/model/product-in-purchase-order.model';
+import { findDOMNode } from 'react-dom';
+import moment = require('moment');
 
 // export interface IPurchaseOrderProps extends RouteComponentProps<{ url: string }> {}
 
-interface IWightValidationProps extends StateProps, DispatchProps, RouteComponentProps<{ purchaseOrder: string }> {}
+interface IDateValidationProps extends StateProps, DispatchProps, RouteComponentProps<{ purchaseOrder: string }> {}
 
-export class WightValidation extends React.Component<IWightValidationProps> {
+export class DateValidation extends React.Component<IDateValidationProps> {
   componentDidMount() {
     this.props.getProducts();
     this.props.getPurchaseOrder(this.props.match.params.purchaseOrder);
     this.props.getProductInPurchaseOrder();
   }
 
+  validDates() {
+    return [
+      moment('2018-12-01'),
+      moment('2018-12-06'),
+      moment('2018-12-09'),
+      moment('2018-12-16'),
+      moment('2018-12-23'),
+      moment('2018-12-28')
+    ];
+  }
+
   render() {
     const validItemStock = (i: IProductInPurchaseOrder) => i.quantity <= this.props.products.find(p => p.id === i.product.id).stock;
 
     const passValidation = () => {
-      //   const totalWieght =
-      //     this.props.productInPurchaseOrder
-      //         .filter(p => p.purchaseOrder.id === this.props.purchaseOrder.id)
-      //         .map(x => x.product.weight * x.quantity)
-      //         .reduce((y, z) =>  y + z);
-      //     const truckCount = Math.trunc(totalWieght / this.props.truck.maxWeight)
-      //   return totalWieght <= this.props.truck.maxWeight
-      return true;
+      const orderDate = this.props.purchaseOrder.date;
+      return this.validDates().find(d => d === orderDate) != undefined;
     };
 
     const validationResult = () => {
@@ -63,7 +70,7 @@ export class WightValidation extends React.Component<IWightValidationProps> {
             >
               <FontAwesomeIcon icon="check-square" /> <span className="d-none d-md-inline">Modificar</span>
             </Button>
-            <Button className="float-right" tag={Link} to={`/validateDate/${this.props.purchaseOrder.id}`} color="info" size="sm">
+            <Button className="float-right" tag={Link} to={`/validateStock`} color="info" size="sm">
               <FontAwesomeIcon icon="check-square" /> <span className="d-none d-md-inline">Siguiente</span>
             </Button>
           </div>
@@ -73,7 +80,7 @@ export class WightValidation extends React.Component<IWightValidationProps> {
           <Button
             className="float-right"
             tag={Link}
-            to={`/entity/purchase-order/${this.props.purchaseOrder.id}/revision`}
+            to={`/entity/purchase-order/${this.props.purchaseOrder.id}/edit`}
             color="info"
             size="sm"
           >
@@ -127,4 +134,4 @@ type DispatchProps = typeof mapDispatchToProps;
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(WightValidation);
+)(DateValidation);

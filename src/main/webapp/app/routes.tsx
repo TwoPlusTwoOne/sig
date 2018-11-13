@@ -15,6 +15,7 @@ import ErrorBoundaryRoute from 'app/shared/error/error-boundary-route';
 import StockValidation from 'app/modules/validations/sotck';
 import VolumeValidation from 'app/modules/validations/volume';
 import WeightValidation from 'app/modules/validations/weight';
+import DateValidation from 'app/modules/validations/dater';
 import { AUTHORITIES } from 'app/config/constants';
 
 // tslint:disable:space-in-parens
@@ -39,6 +40,7 @@ const Routes = () => (
       <ErrorBoundaryRoute path="/validateStock/:purchaseOrder?" component={StockValidation} />
       <ErrorBoundaryRoute path="/validateVolume/:purchaseOrder?" component={VolumeValidation} />
       <ErrorBoundaryRoute path="/validateWeight/:purchaseOrder?" component={WeightValidation} />
+      <ErrorBoundaryRoute path="/validateDate/:purchaseOrder?" component={DateValidation} />
       <ErrorBoundaryRoute path="/reset/request" component={PasswordResetInit} />
       <ErrorBoundaryRoute path="/reset/finish/:key?" component={PasswordResetFinish} />
       <PrivateRoute path="/admin" component={Admin} hasAnyAuthorities={[AUTHORITIES.ADMIN]} />
