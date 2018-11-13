@@ -3,9 +3,6 @@ import './header.css';
 import React from 'react';
 
 import { Navbar, Nav, NavbarToggler, NavbarBrand, Collapse } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-import { NavLink as Link } from 'react-router-dom';
 import LoadingBar from 'react-redux-loading-bar';
 
 import { Home, Brand } from './header-components';
@@ -28,13 +25,6 @@ export default class Header extends React.Component<IHeaderProps, IHeaderState> 
     menuOpen: false
   };
 
-  renderDevRibbon = () =>
-    this.props.isInProduction === false ? (
-      <div className="ribbon dev">
-        <a href="">Development</a>
-      </div>
-    ) : null;
-
   toggleMenu = () => {
     this.setState({ menuOpen: !this.state.menuOpen });
   };
@@ -46,11 +36,9 @@ export default class Header extends React.Component<IHeaderProps, IHeaderState> 
 
     return (
       <div id="app-header">
-        {this.renderDevRibbon()}
         <LoadingBar className="loading-bar" />
         <Navbar dark expand="sm" fixed="top" className="jh-navbar">
           <NavbarToggler aria-label="Menu" onClick={this.toggleMenu} />
-          <Brand />
           <Collapse isOpen={this.state.menuOpen} navbar>
             <Nav id="header-tabs" className="ml-auto" navbar>
               <Home />
