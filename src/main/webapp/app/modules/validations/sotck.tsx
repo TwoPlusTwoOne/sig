@@ -1,19 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import { Button, Col, Row, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 // tslint:disable-next-line:no-unused-variable
-import { ICrudGetAllAction, TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 // import { getEntities } from './purchase-order.reducer';
-import { IPurchaseOrder } from 'app/shared/model/purchase-order.model';
+import { PurchaseOrderStatus } from 'app/shared/model/purchase-order.model';
 import { getEntities as getProducts } from 'app/entities/product/product.reducer';
-import { getEntity as getPurchaseOrder } from 'app/entities/purchase-order/purchase-order.reducer';
+import { getEntity as getPurchaseOrder, updateEntity as updatePurchaseOrder } from 'app/entities/purchase-order/purchase-order.reducer';
 import { getEntities as getProductInPurchaseOrder } from 'app/entities/product-in-purchase-order/product-in-purchase-order.reducer';
 // tslint:disable-next-line:no-unused-variable
-import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { IProductInPurchaseOrder } from 'app/shared/model/product-in-purchase-order.model';
 
 // export interface IPurchaseOrderProps extends RouteComponentProps<{ url: string }> {}
@@ -30,6 +28,10 @@ export class StockValidation extends React.Component<IStockValidationProps> {
     this.props.getPurchaseOrder(this.props.match.params.purchaseOrder);
     this.props.getProductInPurchaseOrder();
   }
+
+  setRejectedState = () => {
+    this.props.updatePurchaseOrder({ ...this.props.purchaseOrder, status: PurchaseOrderStatus.Rejected });
+  };
 
   render() {
     // const { purchaseOrderList, match } = this.props;
@@ -92,7 +94,7 @@ export class StockValidation extends React.Component<IStockValidationProps> {
           <ModalHeader>Error</ModalHeader>
           <ModalBody>La orden de compra supero el numero máximo de correcciones</ModalBody>
           <ModalFooter>
-            <Button color="alert" tag={Link} to={`/`}>
+            <Button onClick={this.setRejectedState} color="alert" tag={Link} to={`/`}>
               Continuar
             </Button>
           </ModalFooter>
@@ -128,7 +130,8 @@ const mapStateToProps = (storeState: IRootState) => ({
 const mapDispatchToProps = {
   getProducts,
   getPurchaseOrder,
-  getProductInPurchaseOrder
+  getProductInPurchaseOrder,
+  updatePurchaseOrder
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;

@@ -27,6 +27,8 @@
     "clientPackageManager": "npm",
     "testFrameworks": [],
     "jhiPrefix": "jhi",
-    "enableTranslation": false
+    "enableTranslation": false,
+    "herokuAppName": "sig",
+    "herokuDeployType": "git"
   }
 }
