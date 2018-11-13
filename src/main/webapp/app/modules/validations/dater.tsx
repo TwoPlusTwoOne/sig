@@ -17,7 +17,7 @@ import { getEntities as getProductInPurchaseOrder } from 'app/entities/product-i
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { IProductInPurchaseOrder } from 'app/shared/model/product-in-purchase-order.model';
 import { findDOMNode } from 'react-dom';
-import moment = require('moment');
+const moment = require('moment');
 
 // export interface IPurchaseOrderProps extends RouteComponentProps<{ url: string }> {}
 
@@ -32,12 +32,12 @@ export class DateValidation extends React.Component<IDateValidationProps> {
 
   validDates() {
     return [
-      moment('2018-12-01'),
-      moment('2018-12-06'),
-      moment('2018-12-09'),
-      moment('2018-12-16'),
-      moment('2018-12-23'),
-      moment('2018-12-28')
+      moment().format('2018-12-01'),
+      moment().format('2018-12-06'),
+      moment().format('2018-12-09'),
+      moment().format('2018-12-16'),
+      moment().format('2018-12-23'),
+      moment().format('2018-12-28')
     ];
   }
 
@@ -46,7 +46,11 @@ export class DateValidation extends React.Component<IDateValidationProps> {
 
     const passValidation = () => {
       const orderDate = this.props.purchaseOrder.date;
-      return this.validDates().find(d => d === orderDate) != undefined;
+      if (orderDate != undefined) {
+        return this.validDates().find(d => d === orderDate) != undefined;
+      } else {
+        return false;
+      }
     };
 
     const validationResult = () => {
@@ -94,7 +98,7 @@ export class DateValidation extends React.Component<IDateValidationProps> {
       <div>
         <Row>
           <Col>
-            <h2 id="purchase-order-heading">Validación de peso</h2>
+            <h2 id="purchase-order-heading">Validación de fecha de entrega</h2>
           </Col>
         </Row>
         <Row>
