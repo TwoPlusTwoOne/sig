@@ -11,7 +11,10 @@ import { createEntity, getEntity, reset, updateEntity } from './purchase-order.r
 import { getEntities as getProducts } from 'app/entities/product/product.reducer';
 import { getEntities as getClients } from 'app/entities/client/client.reducer';
 import { getEntities as getLocales } from 'app/entities/locale/locale.reducer';
-import { getEntities as getProductsInPurchaseOrder } from 'app/entities/product-in-purchase-order/product-in-purchase-order.reducer';
+import {
+  getEntities as getProductsInPurchaseOrder,
+  deleteEntity as deleteProductsInPurchaseOrder
+} from 'app/entities/product-in-purchase-order/product-in-purchase-order.reducer';
 import { IProduct } from 'app/shared/model/product.model';
 import { IProductInPurchaseOrder } from 'app/shared/model/product-in-purchase-order.model';
 import { ILocale } from 'app/shared/model/locale.model';
@@ -22,6 +25,7 @@ export interface IPurchaseOrderUpdateState {
   isNew: boolean;
   products: IProductInPurchaseOrder[];
   clientId: string;
+  deletedProducts: string[];
 }
 
 interface IAddProductRowProps {
@@ -134,13 +138,23 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
     this.state = {
       isNew: !this.props.match.params || !this.props.match.params.id,
       products: [],
-      clientId: '0'
+      clientId: '0',
+      deletedProducts: []
     };
   }
 
   componentWillUpdate(nextProps, nextState) {
     if (nextProps.updateSuccess !== this.props.updateSuccess && nextProps.updateSuccess) {
       this.handleClose();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.productsInPurchaseOrder !== this.props.productsInPurchaseOrder) {
+      const productsInThisPurchaseOrder = this.props.productsInPurchaseOrder.filter(
+        p => p.purchaseOrder.id === this.props.purchaseOrderEntity.id
+      );
+      this.setState({ products: this.state.products.concat(productsInThisPurchaseOrder) });
     }
   }
 
@@ -168,6 +182,7 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
         this.props.createEntity(entity);
       } else {
         this.props.updateEntity({ ...entity, products: this.state.products });
+        this.state.deletedProducts.forEach(dp => this.props.deleteProductsInPurchaseOrder(dp));
       }
     }
   };
@@ -181,15 +196,20 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
     this.props.history.push('/entity/purchase-order');
   };
 
+  handleRemoveRow = (index: number) => {
+    const productsCopy = [...this.state.products];
+    const removed = productsCopy.splice(index, 1);
+    this.setState({
+      products: productsCopy,
+      deletedProducts: [...this.state.deletedProducts.concat([removed[0].id.toString()])]
+    });
+  };
+
   render() {
-    const { purchaseOrderEntity, loading, updating, allProducts = [], clients, locales = [], productsInPurchaseOrder } = this.props;
+    const { purchaseOrderEntity, loading, updating, allProducts = [], clients, locales = [] } = this.props;
     const { isNew, products = [] } = this.state;
 
     const clientLocales = purchaseOrderEntity.client ? locales.filter(locale => locale.client.id === purchaseOrderEntity.client.id) : [];
-
-    const productsInCurrentPurchaseOrder = productsInPurchaseOrder
-      .filter(p => p.purchaseOrder.id === purchaseOrderEntity.id)
-      .concat(products);
 
     return (
       <div>
@@ -268,14 +288,20 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
                       <th>Nombre</th>
                       <th>Cantidad</th>
                       <th>Local</th>
+                      <th />
                     </tr>
-                    {productsInCurrentPurchaseOrder.map((product: IProductInPurchaseOrder) => (
+                    {products.map((product: IProductInPurchaseOrder, i: number) => (
                       <tr key={product.id}>
                         <td>{product.product.id}</td>
                         <td>{product.product.name}</td>
                         <td>{product.quantity}</td>
                         <td>
                           [{product.locale.id}] {product.locale.name}
+                        </td>
+                        <td>
+                          <Button id="jhi-confirm-delete-purchaseOrder" color="danger" onClick={() => this.handleRemoveRow(i)}>
+                            <FontAwesomeIcon icon="trash" />
+                          </Button>
                         </td>
                       </tr>
                     ))}
@@ -320,7 +346,8 @@ const mapDispatchToProps = {
   getProducts,
   getClients,
   getLocales,
-  getProductsInPurchaseOrder
+  getProductsInPurchaseOrder,
+  deleteProductsInPurchaseOrder
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;

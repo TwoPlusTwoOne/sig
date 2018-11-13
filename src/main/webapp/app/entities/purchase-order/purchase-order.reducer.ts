@@ -128,12 +128,14 @@ export const updateEntity: ICrudPutAction<IPurchaseOrder> = entity => async disp
     type: ACTION_TYPES.UPDATE_PURCHASEORDER,
     payload: axios.put(apiUrl, cleanEntity(entity))
   });
+
   entity.products.forEach(product => {
     if (!product.id) {
       const a: IProductInPurchaseOrder = { ...product, purchaseOrder: { id: entity.id } };
       dispatch(createProductInPurchaseOrder(a));
     }
   });
+
   dispatch(getEntities());
   return result;
 };
