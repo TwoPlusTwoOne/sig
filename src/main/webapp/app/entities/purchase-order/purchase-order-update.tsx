@@ -205,6 +205,26 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
     });
   };
 
+  toCSV = () => {
+    const items: IProductInPurchaseOrder[] = this.state.products;
+
+    const getResultForColumn = (fieldName: string, row: IProductInPurchaseOrder) => {
+      if (fieldName === 'locale') return `[${row.locale.id}] ${row.locale.name}`;
+      if (fieldName === 'product') return `[${row.product.id}] ${row.product.name}`;
+      return row[fieldName];
+    };
+
+    const replacer = (key, value) => (value === null ? '' : value); // specify how you want to handle null values here
+    const header = Object.keys(items[0]).filter(key => key !== 'purchaseOrder');
+    let csv = items.map(row => {
+      return header.map(fieldName => JSON.stringify(getResultForColumn(fieldName, row), replacer)).join(',');
+    });
+    csv.unshift(header.join(','));
+    const csvString = csv.join('\r\n');
+
+    console.log(csvString);
+  };
+
   render() {
     const { purchaseOrderEntity, loading, updating, allProducts = [], clients, locales = [] } = this.props;
     const { isNew, products = [] } = this.state;
