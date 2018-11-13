@@ -25,22 +25,22 @@ export interface IPurchaseOrderUpdateState {
   clientId: string;
 }
 
-type AddProductRowProps = {
+interface IAddProductRowProps {
   products: ReadonlyArray<IProduct>;
   locales: ILocale[];
   onSubmit: (item: IProductInPurchaseOrder) => any;
-};
+}
 
-type AddProductRowState = {
+interface IAddProductRowState {
   fields: {
     product: IProduct;
     quantity: number;
     locale: string;
   };
-};
+}
 
-class AddProductRow extends Component<AddProductRowProps, AddProductRowState> {
-  state: AddProductRowState = {
+class AddProductRow extends Component<IAddProductRowProps, IAddProductRowState> {
+  state: IAddProductRowState = {
     fields: {
       product: null,
       quantity: 0,
@@ -203,7 +203,7 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
     const { purchaseOrderEntity, loading, updating, allProducts = [], clients, locales = [] } = this.props;
     const { isNew, products = [] } = this.state;
 
-    const clientLocales = locales.filter(locale => locale.client.id === purchaseOrderEntity.client.id);
+    const clientLocales = purchaseOrderEntity.client ? locales.filter(locale => locale.client.id === purchaseOrderEntity.client.id) : [];
 
     return (
       <div>
@@ -283,19 +283,16 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
                       <th>Cantidad</th>
                       <th>Local</th>
                     </tr>
-                    {products.map((product: IProductInPurchaseOrder) => {
-                      console.log({ product });
-                      return (
-                        <tr>
-                          <td>{product.product.id}</td>
-                          <td>{product.product.name}</td>
-                          <td>{product.quantity}</td>
-                          <td>
-                            [{product.locale.id}] {product.locale.name}
-                          </td>
-                        </tr>
-                      );
-                    })}
+                    {products.map((product: IProductInPurchaseOrder) => (
+                      <tr key={product.id}>
+                        <td>{product.product.id}</td>
+                        <td>{product.product.name}</td>
+                        <td>{product.quantity}</td>
+                        <td>
+                          [{product.locale.id}] {product.locale.name}
+                        </td>
+                      </tr>
+                    ))}
                   </Table>
                 </div>
                 <AddProductRow onSubmit={this.addProduct} products={allProducts} locales={clientLocales} />

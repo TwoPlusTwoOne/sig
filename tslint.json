@@ -194,6 +194,8 @@
     "ter-func-call-spacing": [true, "never"],
     "no-multi-spaces": [true],
     "array-bracket-spacing": [false],
+    "jsx-no-lambda": [false],
+    "max-classes-per-file": [false],
     "brace-style": [
       true,
       "1tbs",
