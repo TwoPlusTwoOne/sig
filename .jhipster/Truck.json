@@ -1,0 +1,23 @@
+{
+    "name": "Truck",
+    "fields": [
+        {
+            "fieldName": "maxPallets",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "maxWeight",
+            "fieldType": "Double"
+        }
+    ],
+    "relationships": [],
+    "changelogDate": "20181113050919",
+    "entityTableName": "truck",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

@@ -1,0 +1,32 @@
+{
+    "name": "Client",
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "locales",
+            "otherEntityName": "locale",
+            "otherEntityRelationshipName": "client"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "purchaseOrders",
+            "otherEntityName": "purchaseOrder",
+            "otherEntityRelationshipName": "client"
+        }
+    ],
+    "changelogDate": "20181113050916",
+    "entityTableName": "client",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

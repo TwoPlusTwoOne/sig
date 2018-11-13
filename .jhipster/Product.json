@@ -1,0 +1,42 @@
+{
+    "name": "Product",
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "weight",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "stock",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "unitsPerBox",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "boxesPerPallet",
+            "fieldType": "Integer"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "purchaseOrder",
+            "otherEntityName": "productInPurchaseOrder",
+            "otherEntityRelationshipName": "product"
+        }
+    ],
+    "changelogDate": "20181113050918",
+    "entityTableName": "product",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

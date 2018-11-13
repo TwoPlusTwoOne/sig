@@ -1,0 +1,38 @@
+{
+    "name": "ProductInPurchaseOrder",
+    "fields": [
+        {
+            "fieldName": "quantity",
+            "fieldType": "Integer"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "locale",
+            "otherEntityName": "locale",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "purchaseOrder",
+            "otherEntityName": "purchaseOrder",
+            "otherEntityField": "id"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "product",
+            "otherEntityName": "product",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20181113050920",
+    "entityTableName": "product_in_purchase_order",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}

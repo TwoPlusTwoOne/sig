@@ -1,0 +1,61 @@
+entity PurchaseOrder {
+	date LocalDate,
+    revisionAttempts Integer,
+    status PurchaseOrderStatus
+}
+
+enum PurchaseOrderStatus {
+	PendingApproval,
+    PendingRevision,
+    Approved,
+    Rejected
+}
+
+entity Client {
+	name String
+}
+
+entity Locale {
+	name String,
+    address String,
+    region String,
+    province String,
+    city String,
+}
+
+relationship OneToMany {
+	Client{locales} to Locale{client}
+}
+
+entity Product {
+	name String,
+	weight Double,
+	stock Double,
+    unitsPerBox Integer,
+    boxesPerPallet Integer,
+}
+
+entity Truck {
+	maxPallets Integer,
+    maxWeight Double,
+}
+
+entity ProductInPurchaseOrder {
+	quantity Integer
+}
+
+relationship ManyToOne {
+	 ProductInPurchaseOrder{locale} to Locale
+}
+
+relationship ManyToOne {
+	PurchaseOrder{client} to Client{purchaseOrders}
+}
+
+relationship OneToMany {
+	PurchaseOrder{product} to ProductInPurchaseOrder{purchaseOrder}
+}
+
+relationship OneToMany {
+	Product{purchaseOrder} to ProductInPurchaseOrder{product}
+}

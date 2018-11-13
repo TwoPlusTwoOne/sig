@@ -1,0 +1,41 @@
+{
+    "name": "PurchaseOrder",
+    "fields": [
+        {
+            "fieldName": "date",
+            "fieldType": "LocalDate"
+        },
+        {
+            "fieldName": "revisionAttempts",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "status",
+            "fieldType": "PurchaseOrderStatus",
+            "fieldValues": "PendingApproval,PendingRevision,Approved,Rejected"
+        }
+    ],
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "product",
+            "otherEntityName": "productInPurchaseOrder",
+            "otherEntityRelationshipName": "purchaseOrder"
+        },
+        {
+            "relationshipType": "many-to-one",
+            "relationshipName": "client",
+            "otherEntityName": "client",
+            "otherEntityField": "id"
+        }
+    ],
+    "changelogDate": "20181113050915",
+    "entityTableName": "purchase_order",
+    "dto": "no",
+    "pagination": "no",
+    "service": "no",
+    "jpaMetamodelFiltering": false,
+    "fluentMethods": true,
+    "clientRootFolder": "",
+    "applications": "*"
+}
