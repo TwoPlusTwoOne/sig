@@ -8,9 +8,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './purchase-order.reducer';
-import { IPurchaseOrder } from 'app/shared/model/purchase-order.model';
+import { IPurchaseOrder, PurchaseOrderStatus } from 'app/shared/model/purchase-order.model';
 // tslint:disable-next-line:no-unused-variable
-import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 export interface IPurchaseOrderDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
@@ -49,17 +50,22 @@ export class PurchaseOrderDetail extends React.Component<IPurchaseOrderDetailPro
             <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>
           </Button>
           &nbsp;
-          <Button tag={Link} to={`/entity/purchase-order/${purchaseOrderEntity.id}/edit`} replace color="primary">
-            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-          </Button>
+          {(this.props.isAdmin ||
+            (purchaseOrderEntity.status === PurchaseOrderStatus.PendingApproval ||
+              purchaseOrderEntity.status === PurchaseOrderStatus.Approved)) && (
+            <Button tag={Link} to={`/entity/purchase-order/${purchaseOrderEntity.id}/edit`} replace color="primary">
+              <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+            </Button>
+          )}
         </Col>
       </Row>
     );
   }
 }
 
-const mapStateToProps = ({ purchaseOrder }: IRootState) => ({
-  purchaseOrderEntity: purchaseOrder.entity
+const mapStateToProps = ({ purchaseOrder, authentication }: IRootState) => ({
+  purchaseOrderEntity: purchaseOrder.entity,
+  isAdmin: hasAnyAuthority(authentication.account.authorities, [AUTHORITIES.ADMIN])
 });
 
 const mapDispatchToProps = { getEntity };

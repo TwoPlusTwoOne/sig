@@ -18,6 +18,7 @@ import {
 import { IProduct } from 'app/shared/model/product.model';
 import { IProductInPurchaseOrder } from 'app/shared/model/product-in-purchase-order.model';
 import { ILocale } from 'app/shared/model/locale.model';
+import { PurchaseOrderStatus } from 'app/shared/model/purchase-order.model';
 import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import { AUTHORITIES } from 'app/config/constants';
 
@@ -134,7 +135,7 @@ class AddProductRow extends Component<IAddProductRowProps, IAddProductRowState> 
   }
 }
 
-export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdateProps, IPurchaseOrderUpdateState> {
+export class PurchaseOrderUpdateRevision extends React.Component<IPurchaseOrderUpdateProps, IPurchaseOrderUpdateState> {
   constructor(props) {
     super(props);
     this.state = {
@@ -177,7 +178,9 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
       const { purchaseOrderEntity } = this.props;
       const entity = {
         ...purchaseOrderEntity,
-        ...values
+        ...values,
+        revisionAttempts: purchaseOrderEntity.revisionAttempts + 1,
+        status: PurchaseOrderStatus.PendingRevision
       };
 
       if (this.state.isNew) {
@@ -335,7 +338,7 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
                 &nbsp;
                 <Button color="primary" id="save-entity" type="submit" disabled={updating}>
                   <FontAwesomeIcon icon="save" />
-                  &nbsp; Guardar
+                  &nbsp; Enviar a cliente
                 </Button>
               </AvForm>
             )}
@@ -376,4 +379,4 @@ type DispatchProps = typeof mapDispatchToProps;
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(PurchaseOrderUpdate);
+)(PurchaseOrderUpdateRevision);

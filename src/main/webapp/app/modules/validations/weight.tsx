@@ -73,7 +73,7 @@ export class WightValidation extends React.Component<IWightValidationProps> {
           <Button
             className="float-right"
             tag={Link}
-            to={`/entity/purchase-order/${this.props.purchaseOrder.id}/edit`}
+            to={`/entity/purchase-order/${this.props.purchaseOrder.id}/revision`}
             color="info"
             size="sm"
           >

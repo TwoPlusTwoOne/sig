@@ -8,9 +8,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntities } from './purchase-order.reducer';
-import { IPurchaseOrder } from 'app/shared/model/purchase-order.model';
+import { IPurchaseOrder, PurchaseOrderStatus } from 'app/shared/model/purchase-order.model';
 // tslint:disable-next-line:no-unused-variable
-import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT, AUTHORITIES } from 'app/config/constants';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 export interface IPurchaseOrderProps extends StateProps, DispatchProps, RouteComponentProps<{ url: string }> {}
 
@@ -71,12 +72,18 @@ export class PurchaseOrder extends React.Component<IPurchaseOrderProps> {
                       <Button tag={Link} to={`${match.url}/${purchaseOrder.id}`} color="info" size="sm">
                         <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">Ver detalle</span>
                       </Button>
-                      <Button tag={Link} to={`${match.url}/${purchaseOrder.id}/edit`} color="primary" size="sm">
-                        <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Modificar</span>
-                      </Button>
-                      <Button tag={Link} to={`${match.url}/${purchaseOrder.id}/delete`} color="danger" size="sm">
-                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Borrar</span>
-                      </Button>
+                      {(this.props.isAdmin ||
+                        (purchaseOrder.status === PurchaseOrderStatus.PendingApproval ||
+                          purchaseOrder.status === PurchaseOrderStatus.Approved)) && (
+                        <span>
+                          <Button tag={Link} to={`${match.url}/${purchaseOrder.id}/edit`} color="primary" size="sm">
+                            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Modificar</span>
+                          </Button>
+                          <Button tag={Link} to={`${match.url}/${purchaseOrder.id}/delete`} color="danger" size="sm">
+                            <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Borrar</span>
+                          </Button>
+                        </span>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -89,8 +96,9 @@ export class PurchaseOrder extends React.Component<IPurchaseOrderProps> {
   }
 }
 
-const mapStateToProps = ({ purchaseOrder }: IRootState) => ({
-  purchaseOrderList: purchaseOrder.entities
+const mapStateToProps = ({ purchaseOrder, authentication }: IRootState) => ({
+  purchaseOrderList: purchaseOrder.entities,
+  isAdmin: hasAnyAuthority(authentication.account.authorities, [AUTHORITIES.ADMIN])
 });
 
 const mapDispatchToProps = {

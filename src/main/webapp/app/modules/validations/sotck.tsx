@@ -72,7 +72,7 @@ export class StockValidation extends React.Component<IStockValidationProps> {
           <Button
             className="float-right"
             tag={Link}
-            to={`/entity/purchase-order/${this.props.purchaseOrder.id}/edit`}
+            to={`/entity/purchase-order/${this.props.purchaseOrder.id}/revision`}
             color="info"
             size="sm"
           >
@@ -85,9 +85,10 @@ export class StockValidation extends React.Component<IStockValidationProps> {
     const showModal = () => {
       return this.props.purchaseOrder.revisionAttempts >= 4;
     };
+
     return (
       <div>
-        <Modal isOpen={showModal}>
+        <Modal isOpen={showModal()}>
           <ModalHeader>Error</ModalHeader>
           <ModalBody>La orden de compra supero el numero máximo de correcciones</ModalBody>
           <ModalFooter>
