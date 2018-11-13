@@ -225,9 +225,10 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
       return <Redirect to={'/'} />;
     }
 
-    const clientLocales = purchaseOrderEntity.client
-      ? locales.filter(locale => locale.client.id === purchaseOrderEntity.client.id)
-      : locales.filter(locale => locale.client.id.toString() === clientId);
+    const clientLocales =
+      clientId !== '0' || !purchaseOrderEntity.client
+        ? locales.filter(locale => locale.client.id.toString() === clientId)
+        : locales.filter(locale => locale.client.id === purchaseOrderEntity.client.id);
 
     return (
       <div>
