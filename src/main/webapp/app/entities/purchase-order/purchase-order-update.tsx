@@ -11,6 +11,7 @@ import { createEntity, getEntity, reset, updateEntity } from './purchase-order.r
 import { getEntities as getProducts } from 'app/entities/product/product.reducer';
 import { getEntities as getClients } from 'app/entities/client/client.reducer';
 import { getEntities as getLocales } from 'app/entities/locale/locale.reducer';
+import { getEntities as getProductsInPurchaseOrder } from 'app/entities/product-in-purchase-order/product-in-purchase-order.reducer';
 import { IProduct } from 'app/shared/model/product.model';
 import { IProductInPurchaseOrder } from 'app/shared/model/product-in-purchase-order.model';
 import { ILocale } from 'app/shared/model/locale.model';
@@ -20,8 +21,6 @@ export interface IPurchaseOrderUpdateProps extends StateProps, DispatchProps, Ro
 export interface IPurchaseOrderUpdateState {
   isNew: boolean;
   products: IProductInPurchaseOrder[];
-  selectedNewProduct: IProduct;
-  newProductQuantity: number;
   clientId: string;
 }
 
@@ -134,9 +133,7 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
     super(props);
     this.state = {
       isNew: !this.props.match.params || !this.props.match.params.id,
-      products: this.props.purchaseOrderEntity.products || [],
-      selectedNewProduct: null,
-      newProductQuantity: 0,
+      products: [],
       clientId: '0'
     };
   }
@@ -156,12 +153,8 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
     this.props.getProducts();
     this.props.getClients();
     this.props.getLocales();
-    this.mapPurchaseOrderProductsToState();
+    this.props.getProductsInPurchaseOrder();
   }
-
-  mapPurchaseOrderProductsToState = () => {
-    this.setState({ products: this.props.purchaseOrderEntity.products || [] });
-  };
 
   saveEntity = (event, errors, values) => {
     if (errors.length === 0) {
@@ -174,7 +167,7 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
       if (this.state.isNew) {
         this.props.createEntity(entity);
       } else {
-        this.props.updateEntity(entity);
+        this.props.updateEntity({ ...entity, products: this.state.products });
       }
     }
   };
@@ -184,26 +177,19 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
     this.setState({ products });
   };
 
-  changeSelectedNewProduct = event => {
-    const value = event.target.value;
-    const selectedNewProduct = this.props.allProducts.find(product => product.id.toString() === value);
-    this.setState({ selectedNewProduct });
-  };
-
-  changeNewProductQuantity = event => {
-    const newProductQuantity = event.target.value;
-    this.setState({ newProductQuantity });
-  };
-
   handleClose = () => {
     this.props.history.push('/entity/purchase-order');
   };
 
   render() {
-    const { purchaseOrderEntity, loading, updating, allProducts = [], clients, locales = [] } = this.props;
+    const { purchaseOrderEntity, loading, updating, allProducts = [], clients, locales = [], productsInPurchaseOrder } = this.props;
     const { isNew, products = [] } = this.state;
 
     const clientLocales = purchaseOrderEntity.client ? locales.filter(locale => locale.client.id === purchaseOrderEntity.client.id) : [];
+
+    const productsInCurrentPurchaseOrder = productsInPurchaseOrder
+      .filter(p => p.purchaseOrder.id === purchaseOrderEntity.id)
+      .concat(products);
 
     return (
       <div>
@@ -283,7 +269,7 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
                       <th>Cantidad</th>
                       <th>Local</th>
                     </tr>
-                    {products.map((product: IProductInPurchaseOrder) => (
+                    {productsInCurrentPurchaseOrder.map((product: IProductInPurchaseOrder) => (
                       <tr key={product.id}>
                         <td>{product.product.id}</td>
                         <td>{product.product.name}</td>
@@ -322,7 +308,8 @@ const mapStateToProps = (storeState: IRootState) => ({
   updateSuccess: storeState.purchaseOrder.updateSuccess,
   allProducts: storeState.product.entities,
   clients: storeState.client.entities,
-  locales: storeState.locale.entities
+  locales: storeState.locale.entities,
+  productsInPurchaseOrder: storeState.productInPurchaseOrder.entities
 });
 
 const mapDispatchToProps = {
@@ -332,7 +319,8 @@ const mapDispatchToProps = {
   reset,
   getProducts,
   getClients,
-  getLocales
+  getLocales,
+  getProductsInPurchaseOrder
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;

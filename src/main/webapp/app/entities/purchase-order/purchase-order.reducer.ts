@@ -3,8 +3,10 @@ import { ICrudGetAction, ICrudGetAllAction, ICrudPutAction, ICrudDeleteAction } 
 
 import { cleanEntity } from 'app/shared/util/entity-utils';
 import { REQUEST, SUCCESS, FAILURE } from 'app/shared/reducers/action-type.util';
+import { createEntity as createProductInPurchaseOrder } from 'app/entities/product-in-purchase-order/product-in-purchase-order.reducer';
 
 import { IPurchaseOrder, defaultValue } from 'app/shared/model/purchase-order.model';
+import { IProductInPurchaseOrder } from 'app/shared/model/product-in-purchase-order.model';
 
 export const ACTION_TYPES = {
   FETCH_PURCHASEORDER_LIST: 'purchaseOrder/FETCH_PURCHASEORDER_LIST',
@@ -125,6 +127,12 @@ export const updateEntity: ICrudPutAction<IPurchaseOrder> = entity => async disp
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_PURCHASEORDER,
     payload: axios.put(apiUrl, cleanEntity(entity))
+  });
+  entity.products.forEach(product => {
+    if (!product.id) {
+      const a: IProductInPurchaseOrder = { ...product, purchaseOrder: { id: entity.id } };
+      dispatch(createProductInPurchaseOrder(a));
+    }
   });
   dispatch(getEntities());
   return result;
