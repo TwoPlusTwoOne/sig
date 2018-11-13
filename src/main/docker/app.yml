@@ -1,0 +1,15 @@
+version: '2'
+services:
+    sig-app:
+        image: sig
+        environment:
+            - _JAVA_OPTIONS=-Xmx512m -Xms256m
+            - SPRING_PROFILES_ACTIVE=prod,swagger
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://sig-postgresql:5432/sig
+            - JHIPSTER_SLEEP=10 # gives time for the database to boot before the application
+        ports:
+            - 8080:8080
+    sig-postgresql:
+        extends:
+            file: postgresql.yml
+            service: sig-postgresql
