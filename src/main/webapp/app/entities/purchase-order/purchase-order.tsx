@@ -60,7 +60,7 @@ export class PurchaseOrder extends React.Component<IPurchaseOrderProps> {
                   </td>
                   <td>{purchaseOrder.revisionAttempts}</td>
                   <td>{purchaseOrder.status}</td>
-                  <td>{purchaseOrder.client ? <Link to={`client/${purchaseOrder.client.id}`}>{purchaseOrder.client.id}</Link> : ''}</td>
+                  <td>{purchaseOrder.client ? `[${purchaseOrder.client.id}] ${purchaseOrder.client.name}` : ''}</td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`${match.url}/${purchaseOrder.id}`} color="info" size="sm">
