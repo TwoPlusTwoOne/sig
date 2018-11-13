@@ -6,7 +6,8 @@ export const enum PurchaseOrderStatus {
   PendingApproval = 'PendingApproval',
   PendingRevision = 'PendingRevision',
   Approved = 'Approved',
-  Rejected = 'Rejected'
+  Rejected = 'Rejected',
+  Uploaded = 'Uploaded'
 }
 
 export interface IPurchaseOrder {

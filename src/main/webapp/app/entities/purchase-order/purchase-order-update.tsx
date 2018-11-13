@@ -278,6 +278,7 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
                     <option value="PendingRevision">PendingRevision</option>
                     <option value="Approved">Approved</option>
                     <option value="Rejected">Rejected</option>
+                    <option value="Uploaded">Uploaded</option>
                   </AvInput>
                 </AvGroup>
                 <div>

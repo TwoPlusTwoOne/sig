@@ -12,7 +12,7 @@
         {
             "fieldName": "status",
             "fieldType": "PurchaseOrderStatus",
-            "fieldValues": "PendingApproval,PendingRevision,Approved,Rejected"
+            "fieldValues": "PendingApproval,PendingRevision,Approved,Rejected,Uploaded"
         }
     ],
     "relationships": [
