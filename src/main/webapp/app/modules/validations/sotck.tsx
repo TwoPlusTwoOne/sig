@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import { Button, Col, Row, Table } from 'reactstrap';
+import { Button, Col, Row, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 // tslint:disable-next-line:no-unused-variable
 import { ICrudGetAllAction, TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -21,6 +21,10 @@ import { IProductInPurchaseOrder } from 'app/shared/model/product-in-purchase-or
 interface IStockValidationProps extends StateProps, DispatchProps, RouteComponentProps<{ purchaseOrder: string }> {}
 
 export class StockValidation extends React.Component<IStockValidationProps> {
+  state = {
+    modal: false
+  };
+
   componentDidMount() {
     this.props.getProducts();
     this.props.getPurchaseOrder(this.props.match.params.purchaseOrder);
@@ -78,8 +82,20 @@ export class StockValidation extends React.Component<IStockValidationProps> {
       }
     };
 
+    const showModal = () => {
+      return this.props.purchaseOrder.revisionAttempts >= 4;
+    };
     return (
       <div>
+        <Modal isOpen={showModal}>
+          <ModalHeader>Error</ModalHeader>
+          <ModalBody>La orden de compra supero el numero máximo de correcciones</ModalBody>
+          <ModalFooter>
+            <Button color="alert" tag={Link} to={`/`}>
+              Continuar
+            </Button>
+          </ModalFooter>
+        </Modal>
         <Row>
           <Col>
             <h2 id="purchase-order-heading">Validación de disponibilidad</h2>

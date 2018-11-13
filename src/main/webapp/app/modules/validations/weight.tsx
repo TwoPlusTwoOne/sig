@@ -37,7 +37,6 @@ export class WightValidation extends React.Component<IWightValidationProps> {
       //         .filter(p => p.purchaseOrder.id === this.props.purchaseOrder.id)
       //         .map(x => x.product.weight * x.quantity)
       //         .reduce((y, z) =>  y + z);
-
       //     const truckCount = Math.trunc(totalWieght / this.props.truck.maxWeight)
       //   return totalWieght <= this.props.truck.maxWeight
       return true;
