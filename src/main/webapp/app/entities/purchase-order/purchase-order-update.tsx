@@ -1,23 +1,19 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Label, Row, Table } from 'reactstrap';
 import { AvField, AvForm, AvGroup, AvInput } from 'availity-reactstrap-validation';
 // tslint:disable-next-line:no-unused-variable
-import { ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
-import { IClient } from 'app/shared/model/client.model';
 import { createEntity, getEntity, reset, updateEntity } from './purchase-order.reducer';
-// tslint:disable-next-line:no-unused-variable
 import { getEntities as getProducts } from 'app/entities/product/product.reducer';
 import { getEntities as getClients } from 'app/entities/client/client.reducer';
+import { getEntities as getLocales } from 'app/entities/locale/locale.reducer';
 import { IProduct } from 'app/shared/model/product.model';
 import { IProductInPurchaseOrder } from 'app/shared/model/product-in-purchase-order.model';
-import { IPurchaseOrder } from 'app/shared/model/purchase-order.model';
-import { convertDateTimeFromServer } from 'app/shared/util/date-utils';
-import { mapIdList } from 'app/shared/util/entity-utils';
+import { ILocale } from 'app/shared/model/locale.model';
 
 export interface IPurchaseOrderUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
@@ -27,6 +23,110 @@ export interface IPurchaseOrderUpdateState {
   selectedNewProduct: IProduct;
   newProductQuantity: number;
   clientId: string;
+}
+
+type AddProductRowProps = {
+  products: ReadonlyArray<IProduct>;
+  locales: ILocale[];
+  onSubmit: (item: IProductInPurchaseOrder) => any;
+};
+
+type AddProductRowState = {
+  fields: {
+    product: IProduct;
+    quantity: number;
+    locale: string;
+  };
+};
+
+class AddProductRow extends Component<AddProductRowProps, AddProductRowState> {
+  state: AddProductRowState = {
+    fields: {
+      product: null,
+      quantity: 0,
+      locale: null
+    }
+  };
+
+  handleChange = (field: string, value: number | IProduct | ILocale) => {
+    this.setState({ ...this.state, fields: { ...this.state.fields, [field]: value } });
+  };
+
+  handleSubmit = () => {
+    const { locale, product, quantity } = this.state.fields;
+
+    this.props.onSubmit({ locale: this.props.locales.find(l => l.id.toString() === locale), product, quantity });
+  };
+
+  render() {
+    return (
+      <Row form className={'align-items-start'}>
+        <Col md={'3'}>
+          <AvGroup>
+            <Label id="revisionAttemptsLabel" for="new-product-name">
+              Producto
+            </Label>
+            <AvField
+              id="new-product-name"
+              type="select"
+              className="form-control"
+              name="new-product-name"
+              onChange={event =>
+                this.handleChange('product', this.props.products.find(product => product.id.toString() === event.target.value))
+              }
+            >
+              <option value={null} />
+              {this.props.products.map(product => (
+                <option value={product.id}>
+                  [{product.id}] {product.name}
+                </option>
+              ))}
+            </AvField>
+          </AvGroup>
+        </Col>
+        <Col md={'3'}>
+          <AvGroup>
+            <Label id="revisionAttemptsLabel" for="new-product-quantity">
+              Cantidad
+            </Label>
+            <AvField
+              id="new-product-quantity"
+              type="number"
+              className="form-control"
+              name="new-product-quantity"
+              onChange={event => this.handleChange('quantity', event.target.value)}
+            />
+          </AvGroup>
+        </Col>
+        <Col md={'3'}>
+          <AvGroup>
+            <Label id="newProductLocaleLabel" for="new-product-locale">
+              Local
+            </Label>
+            <AvField
+              id="new-product-locale"
+              type="select"
+              className="form-control"
+              name="new-product-locale"
+              onChange={event => this.handleChange('locale', event.target.value)}
+            >
+              <option value={'0'} />
+              {this.props.locales.map(locale => (
+                <option value={locale.id} key={locale.id}>
+                  [{locale.id}] {locale.name}
+                </option>
+              ))}
+            </AvField>
+          </AvGroup>
+        </Col>
+        <Col md={'3'}>
+          <Button name={'button'} onClick={this.handleSubmit} id={'add-product'} color="primary" style={{ marginTop: '32px' }}>
+            Agregar
+          </Button>
+        </Col>
+      </Row>
+    );
+  }
 }
 
 export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdateProps, IPurchaseOrderUpdateState> {
@@ -55,6 +155,7 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
     }
     this.props.getProducts();
     this.props.getClients();
+    this.props.getLocales();
     this.mapPurchaseOrderProductsToState();
   }
 
@@ -78,11 +179,8 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
     }
   };
 
-  addProduct = () => {
-    const { selectedNewProduct, newProductQuantity } = this.state;
-    if (!selectedNewProduct || !newProductQuantity) return;
-    const newProduct: IProductInPurchaseOrder = { product: selectedNewProduct, quantity: newProductQuantity };
-    const products = this.state.products.concat([newProduct]);
+  addProduct = (product: IProductInPurchaseOrder) => {
+    const products = this.state.products.concat([product]);
     this.setState({ products });
   };
 
@@ -102,8 +200,10 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
   };
 
   render() {
-    const { purchaseOrderEntity, loading, updating, allProducts = [], clients } = this.props;
+    const { purchaseOrderEntity, loading, updating, allProducts = [], clients, locales = [] } = this.props;
     const { isNew, products = [] } = this.state;
+
+    const clientLocales = locales.filter(locale => locale.client.id === purchaseOrderEntity.client.id);
 
     return (
       <div>
@@ -181,56 +281,24 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
                       <th>ID</th>
                       <th>Nombre</th>
                       <th>Cantidad</th>
+                      <th>Local</th>
                     </tr>
-                    {products.map((product: IProductInPurchaseOrder) => (
-                      <tr>
-                        <td>{product.product.id}</td>
-                        <td>{product.product.name}</td>
-                        <td>{product.quantity}</td>
-                      </tr>
-                    ))}
+                    {products.map((product: IProductInPurchaseOrder) => {
+                      console.log({ product });
+                      return (
+                        <tr>
+                          <td>{product.product.id}</td>
+                          <td>{product.product.name}</td>
+                          <td>{product.quantity}</td>
+                          <td>
+                            [{product.locale.id}] {product.locale.name}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </Table>
                 </div>
-                <Row form className={'align-items-start'}>
-                  <Col md={'4'}>
-                    <AvGroup>
-                      <Label id="revisionAttemptsLabel" for="new-product-name">
-                        Producto
-                      </Label>
-                      <AvField
-                        id="new-product-name"
-                        type="select"
-                        className="form-control"
-                        name="new-product-name"
-                        onChange={this.changeSelectedNewProduct}
-                      >
-                        <option value={null} />
-                        {allProducts.map(product => (
-                          <option value={product.id}>{product.name}</option>
-                        ))}
-                      </AvField>
-                    </AvGroup>
-                  </Col>
-                  <Col md={'4'}>
-                    <AvGroup>
-                      <Label id="revisionAttemptsLabel" for="new-product-quantity">
-                        Cantidad
-                      </Label>
-                      <AvField
-                        id="new-product-quantity"
-                        type="number"
-                        className="form-control"
-                        name="new-product-quantity"
-                        onChange={this.changeNewProductQuantity}
-                      />
-                    </AvGroup>
-                  </Col>
-                  <Col md={'4'}>
-                    <Button name={'button'} onClick={this.addProduct} id={'add-product'} color="primary" style={{ marginTop: '32px' }}>
-                      Agregar
-                    </Button>
-                  </Col>
-                </Row>
+                <AddProductRow onSubmit={this.addProduct} products={allProducts} locales={clientLocales} />
                 <Button tag={Link} id="cancel-save" to="/entity/purchase-order" replace color="info">
                   <FontAwesomeIcon icon="arrow-left" />
                   &nbsp;
@@ -256,7 +324,8 @@ const mapStateToProps = (storeState: IRootState) => ({
   updating: storeState.purchaseOrder.updating,
   updateSuccess: storeState.purchaseOrder.updateSuccess,
   allProducts: storeState.product.entities,
-  clients: storeState.client.entities
+  clients: storeState.client.entities,
+  locales: storeState.locale.entities
 });
 
 const mapDispatchToProps = {
@@ -265,7 +334,8 @@ const mapDispatchToProps = {
   createEntity,
   reset,
   getProducts,
-  getClients
+  getClients,
+  getLocales
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;
