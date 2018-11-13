@@ -10,7 +10,7 @@ import { IRootState } from 'app/shared/reducers';
 // import { getEntities } from './purchase-order.reducer';
 import { IPurchaseOrder } from 'app/shared/model/purchase-order.model';
 import { getEntities as getProducts } from 'app/entities/product/product.reducer';
-import { getEntity as getTruck } from 'app/entities/truck/truck.reducer';
+import { getEntities as getTrucks } from 'app/entities/truck/truck.reducer';
 import { getEntity as getPurchaseOrder } from 'app/entities/purchase-order/purchase-order.reducer';
 import { getEntities as getProductInPurchaseOrder } from 'app/entities/product-in-purchase-order/product-in-purchase-order.reducer';
 // tslint:disable-next-line:no-unused-variable
@@ -22,36 +22,41 @@ import { IProductInPurchaseOrder } from 'app/shared/model/product-in-purchase-or
 interface IWightValidationProps extends StateProps, DispatchProps, RouteComponentProps<{ purchaseOrder: string }> {}
 
 export class WightValidation extends React.Component<IWightValidationProps> {
+  state = {
+    valid: false,
+    currentWight: 0,
+    maxWight: 0
+  };
+
   componentDidMount() {
     this.props.getProducts();
     this.props.getPurchaseOrder(this.props.match.params.purchaseOrder);
     this.props.getProductInPurchaseOrder();
+    this.props.getTrucks();
+
+    const totalWieght = this.props.productInPurchaseOrder
+      .filter(p => p.purchaseOrder.id === this.props.purchaseOrder.id)
+      .map(x => x.product.weight * x.quantity)
+      .reduce((y, z) => y + z);
+    debugger;
+    const truckCount = Math.trunc(totalWieght / 27800);
+    this.setState({ valid: totalWieght <= 27800, currentWight: totalWieght, maxWeight: 27800 });
   }
 
   render() {
     const validItemStock = (i: IProductInPurchaseOrder) => i.quantity <= this.props.products.find(p => p.id === i.product.id).stock;
-
-    const passValidation = () => {
-      //   const totalWieght =
-      //     this.props.productInPurchaseOrder
-      //         .filter(p => p.purchaseOrder.id === this.props.purchaseOrder.id)
-      //         .map(x => x.product.weight * x.quantity)
-      //         .reduce((y, z) =>  y + z);
-      //     const truckCount = Math.trunc(totalWieght / this.props.truck.maxWeight)
-      //   return totalWieght <= this.props.truck.maxWeight
-      return true;
-    };
+    debugger;
 
     const validationResult = () => {
-      if (passValidation()) {
+      if (this.state.valid) {
         return 'Exitosa';
       } else {
-        return 'Fallida';
+        return `Fallida, el peso maximo es 27800 y el peso actual es: ${this.state.currentWight}`;
       }
     };
 
     const formButton = () => {
-      if (passValidation()) {
+      if (this.state.valid) {
         return (
           <div>
             <Button
@@ -94,7 +99,7 @@ export class WightValidation extends React.Component<IWightValidationProps> {
           <Col xs="5" />
           <Col xs="2">
             <div>
-              <h4 className="text-center">Validacion: {validationResult()}</h4>
+              <text className="text-center">Validacion: {validationResult()}</text>
             </div>
           </Col>
           <Col xs="5" />
@@ -117,7 +122,7 @@ const mapStateToProps = (storeState: IRootState) => ({
 const mapDispatchToProps = {
   getProducts,
   getPurchaseOrder,
-  getTruck,
+  getTrucks,
   getProductInPurchaseOrder
 };
 

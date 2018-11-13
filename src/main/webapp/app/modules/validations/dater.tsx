@@ -24,10 +24,21 @@ const moment = require('moment');
 interface IDateValidationProps extends StateProps, DispatchProps, RouteComponentProps<{ purchaseOrder: string }> {}
 
 export class DateValidation extends React.Component<IDateValidationProps> {
+  state = {
+    valid: false
+  };
+
   componentDidMount() {
     this.props.getProducts();
     this.props.getPurchaseOrder(this.props.match.params.purchaseOrder);
     this.props.getProductInPurchaseOrder();
+
+    const orderDate = this.props.purchaseOrder.date;
+    if (orderDate != undefined) {
+      this.setState({ valid: this.validDates().find(d => d === orderDate) != undefined });
+    } else {
+      this.setState({ valid: false });
+    }
   }
 
   validDates() {
@@ -44,25 +55,39 @@ export class DateValidation extends React.Component<IDateValidationProps> {
   render() {
     const validItemStock = (i: IProductInPurchaseOrder) => i.quantity <= this.props.products.find(p => p.id === i.product.id).stock;
 
-    const passValidation = () => {
-      const orderDate = this.props.purchaseOrder.date;
-      if (orderDate != undefined) {
-        return this.validDates().find(d => d === orderDate) != undefined;
-      } else {
-        return false;
-      }
-    };
+    const passValidation = () => {};
 
     const validationResult = () => {
-      if (passValidation()) {
+      if (this.state.valid) {
         return 'Exitosa';
       } else {
         return 'Fallida';
       }
     };
 
+    const getValidDatesTable = () => {
+      if (!this.state.valid) {
+        return (
+          <Table>
+            <thead>
+              <tr>
+                <th>Valid Dates</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.validDates().map(d => (
+                <tr>
+                  <th>{d}</th>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        );
+      }
+    };
+
     const formButton = () => {
-      if (passValidation()) {
+      if (this.state.valid) {
         return (
           <div>
             <Button
@@ -109,6 +134,11 @@ export class DateValidation extends React.Component<IDateValidationProps> {
             </div>
           </Col>
           <Col xs="5" />
+        </Row>
+        <Row>
+          <Col />
+          <Col className="text-center">{getValidDatesTable()}</Col>
+          <Col />
         </Row>
         <Row>
           <Col>{formButton()}</Col>

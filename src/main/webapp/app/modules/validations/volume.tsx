@@ -22,32 +22,41 @@ import { IProductInPurchaseOrder } from 'app/shared/model/product-in-purchase-or
 interface IVolumeValidationProps extends StateProps, DispatchProps, RouteComponentProps<{ purchaseOrder: string }> {}
 
 export class VolumeValidation extends React.Component<IVolumeValidationProps> {
+  state = {
+    missing: -1,
+    fullTrucks: -1,
+    over: -1,
+    validVolume: false
+  };
   componentDidMount() {
     this.props.getProducts();
     this.props.getPurchaseOrder(this.props.match.params.purchaseOrder);
     this.props.getProductInPurchaseOrder();
+
+    const palletsCount = this.props.productInPurchaseOrder
+      .filter(p => p.purchaseOrder.id === this.props.purchaseOrder.id)
+      .map(x => x.quantity / x.product.boxesPerPallet)
+      .reduce((y, z) => y + z);
+
+    const fullTrucks = Math.trunc(palletsCount / 60);
+    const missingPallets = palletsCount - 60 * fullTrucks;
+
+    if (missingPallets == 0) {
+      this.setState({ validVolume: true });
+    } else if (missingPallets < 50) {
+      const missing = 50 - missingPallets;
+      const over = missing;
+      this.setState({ missing: missing, over: over, fullTrucks: fullTrucks, validVolume: false });
+    } else {
+      this.setState({ validVolume: true });
+    }
   }
 
   render() {
-    console.log('VolumeValidation');
-    // const { purchaseOrderList, match } = this.props;
-
     const validItemStock = (i: IProductInPurchaseOrder) => i.quantity <= this.props.products.find(p => p.id === i.product.id).stock;
 
-    const passValidation = () => {
-      //   const totalWieght =
-      //     this.props.productInPurchaseOrder
-      //         .filter(p => p.purchaseOrder.id === this.props.purchaseOrder.id)
-      //         .map(x => x.product.weight * x.quantity)
-      //         .reduce((y, z) =>  y + z);
-
-      //     const truckCount = Math.trunc(totalWieght / this.props.truck.maxWeight)
-      //   return totalWieght <= this.props.truck.maxWeight
-      return true;
-    };
-
     const validationResult = () => {
-      if (passValidation()) {
+      if (this.state.validVolume) {
         return 'Exitosa';
       } else {
         return 'Fallida';
@@ -55,7 +64,7 @@ export class VolumeValidation extends React.Component<IVolumeValidationProps> {
     };
 
     const formButton = () => {
-      if (passValidation()) {
+      if (this.state.validVolume) {
         return (
           <div>
             <Button
@@ -87,6 +96,24 @@ export class VolumeValidation extends React.Component<IVolumeValidationProps> {
       }
     };
 
+    const suggestion = () => {
+      if (!this.state.validVolume && this.state.fullTrucks == 1) {
+        return (
+          <text className="text-center">
+            Se tiene {this.state.fullTrucks} camión lleno pero hay un sobrante de pallets. Se recomienda agregar {this.state.missing} para
+            llenar otro camión o remover {this.state.over} pallets
+          </text>
+        );
+      } else if (!this.state.validVolume) {
+        return (
+          <text className="text-center">
+            Se tienen {this.state.fullTrucks} camiónes llenos pero hay un sobrante de pallets. Se recomienda agregar {this.state.missing}{' '}
+            para llenar otro camión o remover {this.state.over} pallets
+          </text>
+        );
+      }
+    };
+
     return (
       <div>
         <Row>
@@ -102,6 +129,9 @@ export class VolumeValidation extends React.Component<IVolumeValidationProps> {
             </div>
           </Col>
           <Col xs="5" />
+        </Row>
+        <Row>
+          <Col>{suggestion()}</Col>
         </Row>
         <Row>
           <Col>{formButton()}</Col>
