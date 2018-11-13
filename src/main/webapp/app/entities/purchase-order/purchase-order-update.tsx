@@ -207,9 +207,14 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
     });
   };
 
+  handleChangeClient = (event, clientId) => {
+    this.props.getLocales();
+    this.setState({ clientId });
+  };
+
   render() {
     const { purchaseOrderEntity, loading, updating, allProducts = [], clients, locales = [] } = this.props;
-    const { isNew, products = [] } = this.state;
+    const { isNew, products = [], clientId } = this.state;
 
     if (
       !this.props.isAdmin &&
@@ -220,7 +225,9 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
       return <Redirect to={'/'} />;
     }
 
-    const clientLocales = purchaseOrderEntity.client ? locales.filter(locale => locale.client.id === purchaseOrderEntity.client.id) : [];
+    const clientLocales = purchaseOrderEntity.client
+      ? locales.filter(locale => locale.client.id === purchaseOrderEntity.client.id)
+      : locales.filter(locale => locale.client.id.toString() === clientId);
 
     return (
       <div>
@@ -253,7 +260,13 @@ export class PurchaseOrderUpdate extends React.Component<IPurchaseOrderUpdatePro
                 </AvGroup>*/}
                 <AvGroup>
                   <Label for="client.id">Cliente</Label>
-                  <AvInput id="purchase-order-client" type="select" className="form-control" name="client.id">
+                  <AvInput
+                    onChange={this.handleChangeClient}
+                    id="purchase-order-client"
+                    type="select"
+                    className="form-control"
+                    name="client.id"
+                  >
                     <option value="" key="0" />
                     {clients
                       ? clients.map(client => (
