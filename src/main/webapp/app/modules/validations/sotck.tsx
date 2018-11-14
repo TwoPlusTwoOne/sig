@@ -36,11 +36,28 @@ export class StockValidation extends React.Component<IStockValidationProps> {
   render() {
     // const { purchaseOrderList, match } = this.props;
 
-    const validItemStock = (i: IProductInPurchaseOrder) => i.quantity <= this.props.products.find(p => p.id === i.product.id).stock;
+    const validItemStock = (i: IProductInPurchaseOrder[]) => {
+      console.log(`products: ${this.props.products}`);
+      console.log(`sum: ${i.map(p => p.quantity).reduce((x, y) => x + y)}`);
+      console.log(`found product: ${this.props.products.find(p => p.id === i[0].product.id).stock}`);
+      return i.map(p => p.quantity).reduce((x, y) => x + y) <= this.props.products.find(p => p.id === i[0].product.id).stock;
+    };
+
+    function groupBy(array, f) {
+      var groups = {};
+      array.forEach(function(o) {
+        var group = JSON.stringify(f(o));
+        groups[group] = groups[group] || [];
+        groups[group].push(o);
+      });
+      return Object.keys(groups).map(function(group) {
+        return groups[group];
+      });
+    }
 
     const passValidation = () => {
       const products = this.props.productInPurchaseOrder.filter(p => p.purchaseOrder.id === this.props.purchaseOrder.id);
-      return products.filter(p => validItemStock(p)).length > 0;
+      return groupBy(products, i => i.product.id).filter(p => validItemStock(p)).length > 0;
     };
 
     const validationResult = () => {
